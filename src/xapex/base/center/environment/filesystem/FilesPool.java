@@ -18,9 +18,9 @@ public class FilesPool {
     public final String NAME;
     public final List<File> FILES = new List<>();
         public String[] files(){
-            return (String[]) (this.FILES.stream()
+            return this.FILES.stream()
                     .map(f -> f.NAME)
-                    .toArray());
+                    .toArray(String[]::new);
         }
 
     public FilesPool(String name){
@@ -67,26 +67,28 @@ public class FilesPool {
     }
 
     public String[] openFiles(String filesPath) throws NoSuchElementException, ConfigurationManager.NameOccupiedException, IOException {
-        Object[] fileNames;
+        String[] fileNames;
         try (Stream<Path> stream = Files.list(Path.of(filesPath))) {
-
             fileNames = (stream
                     .filter(Files::isRegularFile)
-                    .map(path -> path.getFileName().toString())
-                    .toArray());
+                    .map(path -> (String) (path.getFileName().toString()))
+                    .toArray(String[]::new));
         } catch (Exception e) {throw new IOException(e);}
-        for(Object s : fileNames){
+        for(String s : fileNames){
             for(File f : this.FILES){
-                if(((String)(s)).compareTo(f.NAME) == 0){
-                    throw new ConfigurationManager.NameOccupiedException(((String)(s)));
+                if(s.compareTo(f.NAME) == 0){
+                    throw new ConfigurationManager.NameOccupiedException(s);
                 }
             }
         }
-        for(Object o : fileNames)
-            this.openFile(filesPath, ((String)(o)));
+        for(String o : fileNames)
+            this.openFile(filesPath, o);
+        /*
         String[] fileNamesToReturn = new String[fileNames.length];
         for(int i = 0; i < fileNames.length; i++) fileNamesToReturn[i] = (String) fileNames[i];
         return (String[]) fileNamesToReturn;
+        */
+        return fileNames;
     }
     public File openFile(String filePath, String fileName) throws ConfigurationManager.NameOccupiedException {
         try{
