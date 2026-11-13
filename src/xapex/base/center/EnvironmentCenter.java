@@ -26,6 +26,8 @@ public class EnvironmentCenter extends Center {
 
     public Status configure() {
         super.configure();
+        
+        this.THREAD.name("Environment Center");
 
         this.SM.configure();
         this.SM.personalize();

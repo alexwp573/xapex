@@ -55,6 +55,9 @@ public class ConfigurationManager extends Center {
 
     public Status configure(){
         super.configure();
+        
+        this.THREAD.name("Configuration Manager");
+        
         this.CONFIG_FILES = Xapex.EC.FM.files_pool("CONFIGS");
         return super.configure();
     }

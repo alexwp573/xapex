@@ -60,7 +60,7 @@ public class UserCenter extends Center {
     public Status configure(){
         super.configure();
 
-
+		this.THREAD.name("User Center");
 
         return super.configure();
     }

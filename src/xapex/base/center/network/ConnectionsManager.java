@@ -16,7 +16,7 @@ public class ConnectionsManager extends Center {
     public Status configure() {
         super.configure();
 
-
+		this.THREAD.name("Connections Manager");
 
         return super.configure();
     }

@@ -18,6 +18,9 @@ public class EnvironmentManager extends Center {
 
     public Status configure(){
         super.configure();
+        
+        this.THREAD.name("Environment Manager");
+        
         return super.configure();
     }
 

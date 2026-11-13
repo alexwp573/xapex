@@ -53,7 +53,9 @@ public class SystemManager extends Center {
 
     public Status configure(){
         super.configure();
-
+        
+        this.THREAD.name("System Manager");
+        
         this.detectOS();
         this.detectOSV();
         this.detectArch();

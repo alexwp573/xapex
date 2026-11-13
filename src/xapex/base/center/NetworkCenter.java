@@ -56,6 +56,8 @@ public class NetworkCenter extends Center {
 
     public Status configure() {
         super.configure();
+        
+        this.THREAD.name("Network Center");
 
         this.LOGGER = Xapex.EC.LM.registerFileLogger("NetworkCenter");
 
