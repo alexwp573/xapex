@@ -1,20 +1,197 @@
 package xapex.base.center;
 
+import java.util.NoSuchElementException;
+
 import xapex.Xapex;
 import xapex.base.Center;
 import xapex.base.SingleInstanceHolder;
 import xapex.base.Status;
+import xapex.base.Thread;
 import xapex.base.center.environment.ConfigurationManager;
 import xapex.base.center.environment.configuration.Configuration;
 import xapex.base.center.environment.logs.Logger;
+import xapex.base.center.interfaces.*;
 import xapex.base.center.interfaces.inout.*;
 import xapex.base.center.interfaces.input.*;
 import xapex.base.center.interfaces.output.*;
+import xapex.base.center.module.Module;
 
 public class InterfacesCenter extends Center {
 
     private Logger LOGGER;
     private Configuration CONFIGURATION;
+	public final Api API = new Api(){
+		
+		/*
+		
+		X - XAPEX
+			exit
+			exit < 0 >
+			module < "ATLAS PLANNER" >
+			save
+			close
+		DBC - DATABASE
+			???
+		ENV - ENVIRONMENT
+			log < type=critical title="test a" msg="" >
+			openFile < path="path/to/file" fileName="file.name" >
+		IFC - INTERFACES
+			gui
+			tui
+			remote < onConnectionTitled="test a" >
+			keyboard < true/false >
+			voice < true/false >
+			sound < true/false >
+		NET - NETWORK
+			connect < IP=127.0.0.1 port=12345 titled="test a" >
+		SEC - SECURITY
+			authenticate
+		USR - USER
+			register < userName=alex >
+			login < userName=alex >
+			logout
+			check
+			check < userName=alex >
+		
+		*/
+		
+		public void request(Command cmnd) throws UnknownRequestException{
+			if(cmnd.COMMANDS.check(0).COMMAND().compareTo("quit") == 0 || cmnd.COMMANDS.check(0).COMMAND().compareTo("q") == 0)
+				ACTIVE_MODULE = null;
+			else{
+				if(cmnd.target() != null)
+					switch(cmnd.target()){
+						case "[X]": case "[XAPEX]": {
+								while(cmnd.COMMANDS.count() > 0){
+									Command.CommandPair cp = cmnd.COMMANDS.pull();
+									switch(cp.COMMAND()){
+										case "exit":{
+												if(cp.ARGUMENTS().size() == 0){
+													Xapex.IC.TUI.show("Exiting the Xapex frame-work with code 0...");
+													Xapex.DC.close();
+													Xapex.EC.close();
+													Xapex.IC.save();
+													Xapex.MC.close();
+													Xapex.NC.close();
+													Xapex.SC.close();
+													Xapex.UC.close();
+													Xapex.IC.addTask(() -> System.exit(0));}
+												else{final Integer errorCode;
+													try{errorCode = Integer.parseInt(cp.ARGUMENTS().check(0));
+														Xapex.IC.TUI.show("Exiting the Xapex frame-work with code " + errorCode.toString() + "...");
+														Xapex.DC.close();
+														Xapex.EC.close();
+														Xapex.IC.save();
+														Xapex.MC.close();
+														Xapex.NC.close();
+														Xapex.SC.close();
+														Xapex.UC.close();
+														Xapex.IC.addTask(() -> System.exit(errorCode));}
+													catch(Exception e){throw new UnknownRequestException(cmnd);}
+												}
+											}
+											break;
+										case "quit":{
+											Xapex.IC.TUI.show("Quiting the Xapex frame-work...");
+											Xapex.DC.close();
+											Xapex.EC.close();
+											Xapex.IC.save();
+											Xapex.MC.close();
+											Xapex.NC.close();
+											Xapex.SC.close();
+											Xapex.UC.close();
+											Xapex.IC.addTask(() -> System.exit(0));}
+											break;
+										case "list":{
+												Command.CommandPair cp2 = cmnd.COMMANDS.pull();
+												if(cp2 != null){
+													switch(cp2.COMMAND()){
+														case "threads":{
+															Xapex.IC.TUI.show(Thread.listAllThreads());}
+															break;
+														case "modules":{
+															Xapex.IC.TUI.show(Xapex.MC.listAllModules());
+															}
+															break;
+														default:{
+															throw new UnknownRequestException(cmnd);
+														}
+													}
+												}
+												else{
+													throw new UnknownRequestException(cmnd);
+												}
+											}
+											break;
+										case "module":{
+												String newActvMod = cp.ARGUMENTS().pull();
+												try{ACTIVE_MODULE = Xapex.MC.getModule(newActvMod);}
+												catch(NoSuchElementException nsee){Xapex.EC.LM.console().error(nsee.toString(), "EXCEPTION");}
+												cp.ARGUMENTS().erase();
+											}
+											break;
+										case "test":{
+												Command.CommandPair cp2 = cmnd.COMMANDS.pull();
+												if(cp2 != null){
+													switch(cp2.COMMAND()){
+														case "tasker": case "TASKER": {
+															Xapex.IC.TUI.show(
+															"Tasker is "
+															+ (Center.TASKER.THREAD.isRunning() ? "RUNNING" : "AWAITING")
+															+ " Tasker started? "
+															+ (Center.TASKER.THREAD.started() ? "YES" : "NO"));
+															Xapex.IC.addTask(() -> Xapex.IC.TUI.show("Testing TASKER..."));
+															Thread.waitFor(2, false);
+															Xapex.IC.TUI.show(
+															"Tasker is "
+															+ (Center.TASKER.THREAD.isRunning() ? "RUNNING" : "AWAITING")
+															+ " Tasker started? "
+															+ (Center.TASKER.THREAD.started() ? "YES" : "NO"));
+															}
+															break;
+														default:{
+															throw new UnknownRequestException(cmnd);
+														}
+													}
+												}
+												else{
+													throw new UnknownRequestException(cmnd);
+												}
+											}
+											break;
+										default: throw new UnknownRequestException(cmnd);
+									}
+								}
+							}
+							break;
+						case "[DBC]": case "[DATABASE]": {
+							}
+							break;
+						case "[ENV]": case "[ENVIRONMENT]": {
+							}
+							break;
+						case "[IFC]": case "[INTERFACE]": {
+							}
+							break;
+						case "[NET]": case "[NETWORK]": {
+							}
+							break;
+						case "[SEC]": case "[SECURITY]": {
+							}
+							break;
+						case "[USR]": case "[USER]": {
+							}
+							break;
+						default: throw new UnknownRequestException(cmnd);
+					}
+				else{
+					if(ACTIVE_MODULE == null){ cmnd.target("X"); this.request(cmnd);}
+					else{ACTIVE_MODULE.api().request(cmnd);}
+				}
+			}
+		}
+		
+	};
 
     public final GraphicUserInterfaceManager GUI = new GraphicUserInterfaceManager();
     public final TextUserInterfaceManager TUI = new TextUserInterfaceManager();
@@ -30,8 +207,12 @@ public class InterfacesCenter extends Center {
         InterfacesCenter.INSTANCE.register(this);
     }
 
+	private Module ACTIVE_MODULE = null;
+
     public Status configure() {
         super.configure();
+        
+        this.THREAD.name("Interfaces Center");
 
         this.LOGGER = Xapex.EC.LM.registerFileLogger("InterfacesCenter");
         try {this.CONFIGURATION = Xapex.EC.CM.newConfigurationFromFile("InterfaceCenter");}
@@ -75,21 +256,21 @@ public class InterfacesCenter extends Center {
             catch (CenterStatusNotMatchingException e) {this.LOGGER.error("Cannot start RUI: " + e, "RUN", this.RUI);}
         }
 
-        if(((String)(this.CONFIGURATION.configurationLine("remote").value())).compareTo("true") == 0){
+        if(((String)(this.CONFIGURATION.configurationLine("key").value())).compareTo("true") == 0){
             this.KUI.personalize();
             xapex.base.Thread.waitFor(() -> this.KUI.status() == Status.PERSONALIZED);
             try {this.KUI.start();}
             catch (CenterStatusNotMatchingException e) {this.LOGGER.error("Cannot start KUI: " + e, "RUN", this.KUI);}
         }
 
-        if(((String)(this.CONFIGURATION.configurationLine("remote").value())).compareTo("true") == 0){
+        if(((String)(this.CONFIGURATION.configurationLine("voice").value())).compareTo("true") == 0){
             this.VUI.personalize();
             xapex.base.Thread.waitFor(() -> this.VUI.status() == Status.PERSONALIZED);
             try {this.VUI.start();}
             catch (CenterStatusNotMatchingException e) {this.LOGGER.error("Cannot start VUI: " + e, "RUN", this.VUI);}
         }
 
-        if(((String)(this.CONFIGURATION.configurationLine("remote").value())).compareTo("true") == 0){
+        if(((String)(this.CONFIGURATION.configurationLine("sound").value())).compareTo("true") == 0){
             this.SUO.personalize();
             xapex.base.Thread.waitFor(() -> this.SUO.status() == Status.PERSONALIZED);
             try {this.SUO.start();}

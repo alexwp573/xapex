@@ -8,16 +8,20 @@ import xapex.base.center.InterfacesCenter;
 import xapex.base.center.environment.ConfigurationManager;
 import xapex.base.center.environment.configuration.Configuration;
 import xapex.base.center.environment.logs.Logger;
-import xapex.base.center.interfaces.inout.text.Command;
+import xapex.base.center.interfaces.Command;
 import xapex.base.data.List;
+import xapex.base.data.Chain;
 import xapex.base.data.SignedElement;
+import xapex.base.Thread;
+import xapex.base.center.interfaces.Api;
 
 import java.util.Scanner;
 
 public class TextUserInterfaceManager extends Center {
 
-    public interface TuiListener{void request();}
-    public interface TuiElement{String getView();}
+	public interface Listener{void request();}
+    public interface Element{String getView();}
+    public interface Agent{Agent getParent();}
 
     private Logger LOGGER;
     private Configuration CONFIGURATION;
@@ -31,9 +35,19 @@ public class TextUserInterfaceManager extends Center {
     private final List<SignedElement> LISTENERS = new List<>();
     private SignedElement ACTIVE_LISTENER = null;
     private final Scanner SCANNER = new Scanner(System.in);
-
+    private boolean WAITING_FOR_INPUT = false;
+    private final Chain<String> QUEUED_TASKS = new Chain<>();
+		public void show(String info){
+			synchronized(this){
+				this.QUEUED_TASKS.add(info);
+			}
+		}
+	
     public Status configure() {
         super.configure();
+        
+        this.THREAD.name("Text User Interface Manager");
+        
         this.LOGGER = Xapex.EC.LM.logger("InterfacesCenter");
         return super.configure();
     }
@@ -54,41 +68,18 @@ public class TextUserInterfaceManager extends Center {
 
     public void run() {
         while(this.RUNNING){
-            System.out.print(this.CONFIGURATION.configurationLine("indicator").value());
+			
+			System.out.print(this.CONFIGURATION.configurationLine("indicator").value());
             Command cmnd = Command.of(SCANNER.nextLine());
-            this.TASKER.addTask(() -> {
-                    Xapex.EC.LM.logger("Console").log("INPUT_FOUND");
-                    if(cmnd.TARGET == null) {
-                        if (ACTIVE_LISTENER == null) {
-                            ACTIVE_LISTENER = new SignedElement("TUI", THIS);
-                        }
-
-
-                        //((InterfacesCenter.UserInputListener)(ACTIVE_LISTENER.element())).input(cmnd);
-
-
-                    }
-                    else if(ACTIVE_LISTENER != null && ACTIVE_LISTENER.name().compareTo(cmnd.TARGET) != 0){
-                        boolean found = false;
-                        for(SignedElement se : LISTENERS){
-                            if(se.name().compareTo(cmnd.TARGET) == 0){
-                                found = true;
-                                ACTIVE_LISTENER = se;
-                            }
-                        }
-                        if(!found){
-                            //input(InterfacesCenter.Command.of("[TUI] error < target_not_found=" + cmnd.TARGET + " >"));
-                        }
-                    }
-                    else if(ACTIVE_LISTENER != null && ACTIVE_LISTENER.name().compareTo(cmnd.TARGET) == 0){
-
-
-                        //((InterfacesCenter.UserInputListener)(ACTIVE_LISTENER.element())).input(cmnd);
-
-
-                    }
-            });
-
+            
+			try{Xapex.IC.API.request(cmnd);}
+			catch(Api.UnknownRequestException ure){this.show(ure.toString());}
+			
+			synchronized(this){
+				while(!this.QUEUED_TASKS.isEmpty()){
+					System.out.println(this.QUEUED_TASKS.get());
+				}
+			}
         }
     }
 
