@@ -12,7 +12,10 @@ public class Chain<T> {
     private Tie<T> head = null;
     private Tie<T> last = null;
     public void add(T element){
-        if(this.head != null) this.last.add(element);
+        if(this.head != null){
+			this.last.add(element);
+			this.last = this.last.next();
+		}
         else{
             this.head = new Tie<>(element);
             this.last = this.head;
