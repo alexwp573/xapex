@@ -33,7 +33,7 @@ public class LogsManager extends Center {
         public final char CLASS;
         private LogType(String name, String shortName, byte level, char letter, char clas){
             this.NAME = name;
-            this.SHORT_NAME = name;
+            this.SHORT_NAME = shortName;
             this.LEVEL = level;
             this.LETTER = letter;
             this.CLASS = clas;
@@ -79,6 +79,9 @@ public class LogsManager extends Center {
 
     private FilesPool LOG_FILES;
     private final List<Logger> LOGGERS = new List<>();
+		public Logger console(){
+			return this.logger("Console");
+		}
         public Logger logger(String name) {
             for(Logger l : this.LOGGERS)
                 if(l.name().compareTo(name) == 0)
@@ -121,9 +124,13 @@ public class LogsManager extends Center {
 
     public Status configure(){
         super.configure();
+        
+        this.THREAD.name("Logs Manager");
+        
         this.LOG_FILES = Xapex.EC.FM.files_pool("LOGS");
         try {
             this.register(new Logger("Console"));
+            this.registerFileLogger("ConsoleFile");
             this.registerFileLogger("Lost");
         } catch (ConfigurationManager.NameOccupiedException e) {
             throw new RuntimeException(e);
