@@ -12,8 +12,8 @@ public abstract class Center implements Runnable {
     protected Status STATUS = Status.INITIALIZED;
         public Status status(){return this.STATUS;}
 
-    protected final Tasker TASKER = new Tasker();
-        public void addTask(Tasker.Task task){this.TASKER.addTask(task);}
+    protected static final Tasker TASKER = new Tasker();
+        public void addTask(Tasker.Task task){Center.TASKER.addTask(task); if(!Center.TASKER.THREAD.isRunning()) Center.TASKER.start();}
 
     public final Thread<Center> THREAD = new Thread<>(this);
         protected boolean RUNNING = false;
@@ -33,15 +33,16 @@ public abstract class Center implements Runnable {
     }
     public Status personalize(){
         switch(this.STATUS){
+            case CONFIGURED: this.STATUS = Status.PERSONALIZING; break;
             case LOGGED: this.STATUS = Status.PERSONALIZING; break;
             case PERSONALIZING: this.STATUS = Status.PERSONALIZED; break;
         }
         return this.STATUS;
     }
     public void start() throws CenterStatusNotMatchingException {
-            if(this.STATUS == Status.PERSONALIZED) throw new CenterStatusNotMatchingException(this.STATUS, Status.PERSONALIZED);
-            this.RUNNING = true; this.THREAD.start();
-            this.TASKER.start();}
+            if(this.STATUS != Status.PERSONALIZED) throw new CenterStatusNotMatchingException(this.STATUS, Status.PERSONALIZED);
+            this.THREAD.start(); //this.TASKER.start();
+            this.RUNNING = true; this.STATUS = Status.RUNNING;}
     public Status save(){
         switch(this.STATUS){
             case RUNNING: this.STATUS = Status.SAVING; break;
