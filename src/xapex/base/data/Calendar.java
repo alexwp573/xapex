@@ -23,23 +23,23 @@ public class Calendar{
 	}
 	
 	public static Date of(int y, int m, int d) throws DateDoesNotExistsException{
-		if(y < Calendar.year - 250 || y > Calendar.year + 250) return false;
+		if(y < Calendar.year - 250 || y > Calendar.year + 250) return null;
 		switch(m){
 			case 1: case 3: case 5: case 7: case 8: case 10: case 12:{
-				if(d > 31 || d < 1) return false;
+				if(d > 31 || d < 1) return null;
 				return true;}
 			case 4: case 6: case 9: case 11:{
-				if(d > 30 || d < 1) return false;
+				if(d > 30 || d < 1) return null;
 				return true;}
 			case 2:{
-				if(y % 4 != 0 && d > 28) return false;
+				if(y % 4 != 0 && d > 28) return null;
 				else{
 					
 				}
 				}
 				break;
 			default:{
-				return false;}
+				return null;}
 		}
 	}
 	
