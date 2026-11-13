@@ -33,10 +33,9 @@ public class Tasker implements Runnable {
                 }
         });
         while(this.RUNNING){
+			Thread.waitFor(() -> !this.TASKS_QUEUE.isEmpty());
             synchronized(this){
-                if(this.TASKS_QUEUE.isEmpty()){
-                    this.TASKS_QUEUE.get().start();
-                }
+				this.TASKS_QUEUE.get().start();
             }
         }
     }
