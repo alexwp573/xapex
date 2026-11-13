@@ -6,16 +6,24 @@ import java.time.LocalDateTime;
 public class Calendar{
 	
 	public static LocalDateTime NOW = LocalDateTime.now();
-	public static int YEAR = Calendar.NOW.getYear();
-	public static int MONTH = Calendar.NOW.getMonthValue();
-	public static int DAY = Calendar.NOW.getDayOfMonth();
+		public static int year = Calendar.NOW.getYear();
+		public static int month = Calendar.NOW.getMonthValue();
+		public static int day = Calendar.NOW.getDayOfMonth();
+	
+	public static final Boolean YEAR = false;
+	public static final Boolean MONTH = true;
+	public static final Boolean DAY = null;
+	
+	public static class DateDoesNotExistsException extends Exception{
+		
+	}
 	
 	public static class Date{
 		
 	}
 	
-	public static boolean exists(int y, int m, int d){
-		if(y < Calendar.YEAR - 250 || y > Calendar.YEAR + 250) return false;
+	public static Date of(int y, int m, int d) throws DateDoesNotExistsException{
+		if(y < Calendar.year - 250 || y > Calendar.year + 250) return false;
 		switch(m){
 			case 1: case 3: case 5: case 7: case 8: case 10: case 12:{
 				if(d > 31 || d < 1) return false;
