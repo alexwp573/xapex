@@ -100,6 +100,7 @@ public class FilesystemManager extends Center {
         try{
             this.path("LOGS", this.path("XAPEX") + "/logs");
             this.path("ASSETS", this.path("XAPEX") + "/assets");
+            this.path("LIBS", this.path("XAPEX") + "/libs");
             this.path("CONFIGS", this.path("XAPEX") + "/configs");}
         catch(ConfigurationManager.NameOccupiedException nameOccupiedException){throw new RuntimeException(nameOccupiedException);}
     }
@@ -108,6 +109,8 @@ public class FilesystemManager extends Center {
 
     public Status configure(){
         super.configure();
+        
+        this.THREAD.name("Filesystem Manager");
 
         this.detectFileSeparator();
         this.detectPathSeparator();
