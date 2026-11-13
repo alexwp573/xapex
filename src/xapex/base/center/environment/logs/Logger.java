@@ -4,6 +4,9 @@ import xapex.base.Id;
 import xapex.base.center.environment.LogsManager;
 import xapex.base.center.environment.filesystem.File;
 import xapex.base.data.List;
+import xapex.base.Status;
+
+import xapex.Xapex;
 
 public class Logger {
 
@@ -202,15 +205,39 @@ public class Logger {
     private String buildLog(LogsManager.LogType type, Id id, Object source, String title, String msg){
         StringBuilder stringBuilder = new StringBuilder();
         if(type != null)
-            stringBuilder.append(type.CLASS).append(type).append("\t\t");
+            stringBuilder
+				.append(type.CLASS)
+				.append(type.SHORT_NAME)
+				.append(" ");
         if(id != null)
-            stringBuilder.append("@").append(id).append("\t\t");
-        if(title != null)
-            stringBuilder.append("#").append(title).append("\t\t");
+            stringBuilder
+				.append("@")
+				.append(id)
+				.append(" ");
         if(source != null)
-            stringBuilder.append("$").append(source).append("\t\t");
-        return stringBuilder.append(">>>").append(msg).toString();
+            stringBuilder
+				.append("$")
+				.append(this.fillTitle(source.toString(), 30))
+				.append(" ");
+        if(title != null)
+            stringBuilder
+				.append("#")
+				.append(this.fillTitle(title, 15));
+				//.append(" ");
+        return stringBuilder.append("|").append(msg).toString();
     }
+    private String fillTitle(String title, int length){
+		if(title.length() == length) return title;
+		else if(title.length() > length) return title.substring(title.length() - length - 1, title.length());
+		else{
+			StringBuilder stringBuilder = new StringBuilder();
+			for(int i = title.length(); i <= length; i++){
+				stringBuilder.append(" ");
+			}
+			stringBuilder.append(title);
+			return stringBuilder.toString();
+		}
+	}
     private void targetLog(String msg){
         for(LogsManager.LogTarget lt : this.TARGETS){
             switch(lt){
@@ -231,9 +258,14 @@ public class Logger {
     }
 
     private void logToConsole(String msg){
-        System.out.println(msg);
-    }
-    private void logToFile(String msg){
+		if(Xapex.IC.TUI.status() == Status.RUNNING){
+			Xapex.IC.TUI.show(msg);
+		}
+		else{
+			Xapex.EC.LM.logger("ConsoleFile").logToFile(msg);
+		}
+	}
+    public void logToFile(String msg){
         this.FILE.appendLine(msg);
     }
     private void logToUi(String msg){
