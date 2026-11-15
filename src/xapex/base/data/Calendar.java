@@ -13,11 +13,10 @@ public class Calendar{
 			private static int DAY = Calendar.LDT.getDayOfMonth();
 				public static int day(){return Calendar.DAY;}
 		private static Date NOW;
-		static{
-			try{Calendar.NOW = Calendar.dateOf(Calendar.YEAR, Calendar.MONTH, Calendar.DAY);}
-			catch(Calendar.DateDoesNotExistsException ddnee){throw new RuntimeException(ddnee);}
-		};
-			public static Date now(){return Calendar.NOW;}
+			public static Date now(){
+				try{Calendar.NOW = Calendar.dateOf(Calendar.YEAR, Calendar.MONTH, Calendar.DAY);}
+				catch(Calendar.DateDoesNotExistsException ddnee){throw new RuntimeException(ddnee);}
+				return Calendar.NOW;}
 	
 	public static class DateDoesNotExistsException extends Exception{
 		public final int DAY;
