@@ -79,20 +79,33 @@ public class FilesystemManager extends Center {
         try{this.path("USER_HOME", System.getProperty("user.home"));}
         catch(ConfigurationManager.NameOccupiedException nameOccupiedException){throw new RuntimeException(nameOccupiedException);}
         switch(Xapex.EC.SM.os()){
-            case WINDOWS10: case WINDOWS11: case WINDOWS12:
-                this.PATHS.add(new Pair("WINDOWS_DRIVE_LETTER", this.path("USER_HOME").substring(0, this.path("USER_HOME").indexOf(":") + 1)));
-                try {
-                    this.path("XAPEX", this.path("USER_HOME") + "/AppData/Local/xapex");
-                } catch (ConfigurationManager.NameOccupiedException e) {
-                    throw new RuntimeException(e);
-                }
-                try {
-                    this.path("TEMP_DIR", this.path("WINDOWS_DRIVE_LETTER") + "/Windows/Temp/xapex");
-                } catch (ConfigurationManager.NameOccupiedException e) {
-                    throw new RuntimeException(e);
-                }
-                break;
-            case LINUX: break;
+            case WINDOWS10: case WINDOWS11: case WINDOWS12:{
+	                this.PATHS.add(new Pair("WINDOWS_DRIVE_LETTER", this.path("USER_HOME").substring(0, this.path("USER_HOME").indexOf(":") + 1)));
+	                try {
+	                    this.path("XAPEX", this.path("USER_HOME") + "/AppData/Local/xapex");
+	                } catch (ConfigurationManager.NameOccupiedException e) {
+	                    throw new RuntimeException(e);
+	                }
+	                try {
+	                    this.path("TEMP_DIR", this.path("WINDOWS_DRIVE_LETTER") + "/Windows/Temp/xapex");
+	                } catch (ConfigurationManager.NameOccupiedException e) {
+	                    throw new RuntimeException(e);
+	                }
+	                break;
+	            }
+            case LINUX:{
+	                try {
+	                    this.path("XAPEX", this.path("USER_HOME") + "/xapex");
+	                } catch (ConfigurationManager.NameOccupiedException e) {
+	                    throw new RuntimeException(e);
+	                }
+	                try {
+	                    this.path("TEMP_DIR", "/tmp/xapex");
+	                } catch (ConfigurationManager.NameOccupiedException e) {
+	                    throw new RuntimeException(e);
+	                }
+	                break;
+            }
             case MACOS: break;
             case ANDROID: break;
             case IOS: break;
