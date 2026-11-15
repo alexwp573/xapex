@@ -36,24 +36,28 @@ clear
 #echo "RESOURCES CHECK - POSITIVE"
 #echo "ENGAGING ATLAS..."
 
-CLASSPATH="/opt/"
+#CLASSPATH="/opt/"
 
-SKIPFIRST=1
+#SKIPFIRST=1
 
-for a in ls /lib/xapex/libs/*.jar; do
-	if [ $SKIPFIRST -eq 0 ]; then
-		CLASSPATH="$CLASSPATH:$a"
-	else
-		((SKIPFIRST--))
-	fi
-done
+#for a in ls /lib/xapex/libs/*.jar; do
+#	if [ $SKIPFIRST -eq 0 ]; then
+#		CLASSPATH="$CLASSPATH:$a"
+#	else
+#		((SKIPFIRST--))
+#	fi
+#done
 
-echo "LOGS: libs paths collected"
+#echo "LOGS: libs paths collected"
+
+#cd ~/xapex
+#pwd
+#ls -l
+#java -cp "$CLASSPATH" xapex.Xapex "$@"
+#echo $CLASSPATH
 
 cd ~/xapex
-pwd
-ls -l
-java -cp "$CLASSPATH" xapex.Xapex "$@"
+java xapex.Xapex "$@"
 
 echo "XAPEX TERMINATED"
 
