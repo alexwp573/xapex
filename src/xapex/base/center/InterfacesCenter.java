@@ -16,6 +16,8 @@ import xapex.base.center.interfaces.input.*;
 import xapex.base.center.interfaces.output.*;
 import xapex.base.center.module.Module;
 
+import xapex.base.data.Calendar;
+
 public class InterfacesCenter extends Center {
 
     private Logger LOGGER;
@@ -65,7 +67,7 @@ public class InterfacesCenter extends Center {
 								while(cmnd.COMMANDS.count() > 0){
 									Command.CommandPair cp = cmnd.COMMANDS.pull();
 									switch(cp.COMMAND()){
-										case "exit":{
+										case "exit": case "EXIT":{
 												if(cp.ARGUMENTS().size() == 0){
 													Xapex.IC.TUI.show("Exiting the Xapex frame-work with code 0...");
 													Xapex.DC.close();
@@ -91,7 +93,7 @@ public class InterfacesCenter extends Center {
 												}
 											}
 											break;
-										case "quit":{
+										case "quit": case "QUIT":{
 											Xapex.IC.TUI.show("Quiting the Xapex frame-work...");
 											Xapex.DC.close();
 											Xapex.EC.close();
@@ -102,14 +104,14 @@ public class InterfacesCenter extends Center {
 											Xapex.UC.close();
 											Xapex.IC.addTask(() -> System.exit(0));}
 											break;
-										case "list":{
+										case "list": case "LIST":{
 												Command.CommandPair cp2 = cmnd.COMMANDS.pull();
 												if(cp2 != null){
 													switch(cp2.COMMAND()){
-														case "threads":{
+														case "threads": case "THREADS":{
 															Xapex.IC.TUI.show(Thread.listAllThreads());}
 															break;
-														case "modules":{
+														case "modules": case "MODULES":{
 															Xapex.IC.TUI.show(Xapex.MC.listAllModules());
 															}
 															break;
@@ -123,14 +125,14 @@ public class InterfacesCenter extends Center {
 												}
 											}
 											break;
-										case "module":{
+										case "module": case "MODULE":{
 												String newActvMod = cp.ARGUMENTS().pull();
 												try{ACTIVE_MODULE = Xapex.MC.getModule(newActvMod);}
 												catch(NoSuchElementException nsee){Xapex.EC.LM.console().error(nsee.toString(), "EXCEPTION");}
 												cp.ARGUMENTS().erase();
 											}
 											break;
-										case "test":{
+										case "test": case "TEST":{
 												Command.CommandPair cp2 = cmnd.COMMANDS.pull();
 												if(cp2 != null){
 													switch(cp2.COMMAND()){
@@ -147,6 +149,19 @@ public class InterfacesCenter extends Center {
 															+ (Center.TASKER.THREAD.isRunning() ? "RUNNING" : "AWAITING")
 															+ " Tasker started? "
 															+ (Center.TASKER.THREAD.started() ? "YES" : "NO"));
+															}
+															break;
+														case "date": case "DATE":{
+																int y = Integer.parseInt(cp2.ARGUMENTS().check(0));
+																int m = Integer.parseInt(cp2.ARGUMENTS().check(1));
+																int d = Integer.parseInt(cp2.ARGUMENTS().check(2));
+																Calendar.Date now = Calendar.now();
+																try{
+																	Calendar.Date testDate = Calendar.dateOf(y, m, d);
+																	Xapex.IC.TUI.show(testDate.toString());
+																	Xapex.IC.TUI.show(testDate.toString("cc/yy/mm/dd/mm/yyyy"));
+																}
+																catch(Calendar.DateDoesNotExistsException ddnee){Xapex.IC.TUI.show(ddnee.toString());}
 															}
 															break;
 														default:{
